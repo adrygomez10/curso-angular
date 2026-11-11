@@ -5,13 +5,5 @@
   "singleQuote": true,
   "semi": true,
   "trailingComma": "all",
-  "endOfLine": "lf",
-  "overrides": [
-    {
-      "files": "*.html",
-      "options": {
-        "parser": "angular"
-      }
-    }
-  ]
+  "endOfLine": "lf"
 }

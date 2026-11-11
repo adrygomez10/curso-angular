@@ -10,10 +10,12 @@ trap 'rm -f "$snapshot"' EXIT HUP INT TERM
 tree=$(git write-tree)
 git archive --format=tar "$tree" > "$snapshot"
 
+git show "$tree:compose.yaml" | docker compose --file - config --quiet
+
 image="curso-angular-check:$tree"
-docker build --target tooling --tag "$image" - < "$snapshot"
+docker build --target quality --tag "$image" - < "$snapshot"
 
 # No source bind mount: all checks read only the staged snapshot.
 docker run --rm --interactive \
   --mount type=volume,source=curso-angular-check-npm-cache,target=/home/node/.npm \
-  "$image" sh -eu -c 'tar -xf -; npm ci --no-audit --no-fund; npm run check' < "$snapshot"
+  "$image" sh -eu -c 'tar -xf -; sh scripts/check-infrastructure.sh' < "$snapshot"

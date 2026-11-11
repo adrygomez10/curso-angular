@@ -9,3 +9,4 @@ Dockerfile
 .gitignore
 .gitattributes
 .editorconfig
+workspace/
