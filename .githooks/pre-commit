@@ -1,0 +1,19 @@
+#!/bin/sh
+set -eu
+export MSYS_NO_PATHCONV=1
+
+cd "$(git rev-parse --show-toplevel)"
+
+# Archive the index: never stash, reset, or overwrite the working tree.
+snapshot=$(mktemp)
+trap 'rm -f "$snapshot"' EXIT HUP INT TERM
+tree=$(git write-tree)
+git archive --format=tar "$tree" > "$snapshot"
+
+image="curso-angular-check:$tree"
+docker build --target tooling --tag "$image" - < "$snapshot"
+
+# No source bind mount: all checks read only the staged snapshot.
+docker run --rm --interactive \
+  --mount type=volume,source=curso-angular-check-npm-cache,target=/home/node/.npm \
+  "$image" sh -eu -c 'tar -xf -; npm ci --no-audit --no-fund; npm run check' < "$snapshot"

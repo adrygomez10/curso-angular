@@ -1,0 +1,19 @@
+name: curso-angular
+
+services:
+  angular:
+    build:
+      context: .
+      target: tooling
+    init: true
+    ports:
+      - '127.0.0.1:4200:4200'
+    volumes:
+      - .:/workspace
+      - node_modules:/workspace/node_modules
+      - npm_cache:/home/node/.npm
+    command: npm start
+
+volumes:
+  node_modules:
+  npm_cache:
